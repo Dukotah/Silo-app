@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // ─── CONSTANTS & CONFIGURATION ──────────────────────────────────────────────
 var DATA_STORAGE_KEY = 'silo_v8_universal_data';
@@ -103,14 +103,6 @@ var UNIVERSAL_ACTIVITIES = [
   { id: 'creation', label: 'Creative Project / Craft Development', xp: 70, icon: '🎨', stat: 'soul' }
 ];
 
-var UNIVERSAL_MILESTONES = [
-  { days: 1, xp: 100, label: 'Initial Horizon', desc: 'First 24 hours of intentional distance achieved without breaking configuration.', icon: '🔒', pro: false },
-  { days: 3, xp: 200, label: '72-Hour Threshold', desc: 'Neurological craving responses begin adjusting to the new paradigm.', icon: '🧠', pro: false },
-  { days: 7, xp: 500, label: 'One Week Matrix', desc: 'Systemic fog is parting. Clear validation of personal operational willpower.', icon: '🎯', pro: true },
-  { days: 14, xp: 750, label: 'Fortnight Perimeter', desc: 'Dopamine baselines are actively restoring to equilibrium.', icon: '⚡', pro: true },
-  { days: 30, xp: 1500, label: '30-Day Operational Shift', desc: 'Substantial structural changes achieved. Total self-sovereignty established.', icon: '🛡️', pro: true }
-];
-
 var REFLECTION_PROMPTS = [
   "What is one thing you built or executed today that had absolutely nothing to do with them?",
   "Detail a specific real-world advantage your mindset has gained this week.",
@@ -134,8 +126,7 @@ function CharacterArt({ level, color, glow }) {
       <circle 
         key={'ring-' + i} cx="100" cy="120" r={String(50 + i * 16)} 
         fill="none" stroke={color} strokeWidth="0.8" 
-        opacity={Math.max(0.02, 0.12 - i * 0.02)} 
-        style={{ animation: `pulse ${2 + i * 0.5}s ease-in-out ${i * 0.2}s infinite` }}
+        opacity={Math.max(0.02, 0.12 - i * 0.02)}
       />
     );
   }
@@ -147,7 +138,6 @@ function CharacterArt({ level, color, glow }) {
           {visualRings}
           <ellipse cx="100" cy="185" rx={String(30 + normalizedLevel * 10)} ry="6" fill={color} opacity="0.1" />
           
-          {/* Universal Abstract Character Core Mesh Geometry */}
           <g transform="translate(0, -10)">
             <polygon points="100,45 130,85 100,165 70,85" fill="none" stroke={color} strokeWidth="1.5" opacity={strokeOpacity} />
             <polygon points="100,45 115,85 100,165 85,85" fill="none" stroke={color} strokeWidth="1" opacity={strokeOpacity * 0.6} />
@@ -157,14 +147,13 @@ function CharacterArt({ level, color, glow }) {
             <circle cx="70" cy="85" r="3" fill={color} opacity={strokeOpacity * 0.8} />
             <circle cx="130" cy="85" r="3" fill={color} opacity={strokeOpacity * 0.8} />
             
-            {/* Dynamic internal evolution nodes */}
-            {normalizedLevel >= 1 && <circle cx="100" cy="85" r="6" fill="none" stroke={color} strokeWidth="1.2" style={{ animation: 'pulse 1.5s infinite' }} />}
+            {normalizedLevel >= 1 && <circle cx="100" cy="85" r="6" fill="none" stroke={color} strokeWidth="1.2" />}
             {normalizedLevel >= 2 && <path d="M85,85 L100,65 L115,85 L100,125 Z" fill="none" stroke={color} strokeWidth="0.8" opacity="0.5" />}
             {normalizedLevel >= 3 && <circle cx="100" cy="120" r="14" fill="none" stroke={color} strokeWidth="0.5" strokeDasharray="3 3" />}
             {normalizedLevel >= 4 && (
               <g>
                 <polygon points="100,20 108,35 92,35" fill={color} opacity="0.8" />
-                <circle cx="100" cy="15" r="2.5" fill={color} style={{ animation: 'pulse 1s infinite' }} />
+                <circle cx="100" cy="15" r="2.5" fill={color} />
               </g>
             )}
           </g>
@@ -194,7 +183,7 @@ function MetricProgressBar({ label, value, max, color, theme }) {
         <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: value > 0 ? color : theme.dimmer }}>{value}</span>
       </div>
       <div style={{ height: '4px', background: theme.bd, borderRadius: '2px', overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${percentage}%`, background: color, borderRadius: '2px', transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+        <div style={{ height: '100%', width: `${percentage}%`, background: color, borderRadius: '2px', transition: 'width 0.8s ease' }} />
       </div>
     </div>
   );
@@ -202,7 +191,6 @@ function MetricProgressBar({ label, value, max, color, theme }) {
 
 // ─── SYSTEM MASTER ROOT APP ──────────────────────────────────────────────────
 export default function App() {
-  // 1. LIFTCYCLE STATE STORAGE INITIALIZATION HOOKS (RUNS UNCONDITIONALLY)
   var [userData, setUserData] = useState(function() {
     try {
       var saved = localStorage.getItem(DATA_STORAGE_KEY);
@@ -213,7 +201,7 @@ export default function App() {
         }
       }
     } catch (err) {}
-    return null; // Triggers onboarding if null
+    return null;
   });
 
   var [activeTab, setActiveTab] = useState('dashboard');
@@ -221,21 +209,18 @@ export default function App() {
   var [activePromptIndex, setActivePromptIndex] = useState(0);
   var [journalInput, setJournalInput] = useState('');
   var [selectedMood, setSelectedMood] = useState('💪');
-  var [interceptStep, setInterceptStep] = useState('closed'); // 'closed', 'trigger', 'outcome', 'matrix'
+  var [interceptStep, setInterceptStep] = useState('closed');
   var [interceptTriggerInput, setInterceptTriggerInput] = useState('');
   var [interceptOutcomeInput, setInterceptOutcomeInput] = useState('');
   
-  // Modal Overlays Staging
   var [showProModal, setShowProModal] = useState(false);
   var [proModalTriggerKey, setProModalTriggerKey] = useState('pro');
   var [showSettingsModal, setShowSettingsModal] = useState(false);
   var [xpNotification, setXpNotification] = useState(null);
   var [evolutionModal, setEvolutionModal] = useState(null);
   
-  // Real-time Timer Tick Logic
   var [currentTimeParts, setCurrentTimeParts] = useState({ h: 0, m: 0, s: 0 });
 
-  // 2. EFFECT HOOK PIPELINES
   useEffect(function() {
     if (!userData) return;
     try {
@@ -246,9 +231,7 @@ export default function App() {
   useEffect(function() {
     if (!userData || !userData.ncDate) return;
     
-    // Immediate initial sync calculation
     setCurrentTimeParts(calculateTimeElapsed(userData.ncDate));
-    
     var intervalTimer = setInterval(function() {
       setCurrentTimeParts(calculateTimeElapsed(userData.ncDate));
     }, 1000);
@@ -256,7 +239,6 @@ export default function App() {
     return function() { clearInterval(intervalTimer); };
   }, [userData?.ncDate]);
 
-  // Inject Styles directly into Document Head
   useEffect(function() {
     var existingStyle = document.getElementById('silo-core-styles');
     if (!existingStyle) {
@@ -265,18 +247,14 @@ export default function App() {
       styleElement.innerText = `
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #070a10; font-family: 'DM Mono', monospace; overscroll-behavior: none; -webkit-font-smoothing: antialiased; }
-        input, textarea, button { font-family: inherit; outline: none; }
+        body { background: #070a10; font-family: 'DM Mono', monospace; overscroll-behavior: none; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        input[type='date']::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
       `;
       document.head.appendChild(styleElement);
     }
   }, []);
 
-  // 3. INTERNAL HANDLERS & ARCHITECTURE MATHEMATICS
   function triggerXpGain(amount) {
     if (!userData) return;
     
@@ -285,45 +263,31 @@ export default function App() {
     var theoreticalLevel = Math.min(Math.floor(updatedXp / LEVEL_XP_REQUIREMENT), MAXIMUM_LEVEL - 1);
     
     setXpNotification(amount);
-    
     setUserData(function(prev) {
       return Object.assign({}, prev, { xp: updatedXp });
     });
 
     if (theoreticalLevel > currentLevel) {
-      var stageMetas = CHARACTER_STAGES[theoreticalLevel];
-      setEvolutionModal(stageMetas);
+      setEvolutionModal(CHARACTER_STAGES[theoreticalLevel]);
     }
   }
 
   function handleLogActivity(activityItem) {
     if (!userData) return;
     
-    var todayString = getTodayString();
     var currentLoggedToday = Object.assign({}, userData.loggedToday || {});
     
-    // Toggle logic for item logging within single day parameters
     if (currentLoggedToday[activityItem.id]) {
-      // Already logged today -> Undo tracking logic
       delete currentLoggedToday[activityItem.id];
       var filteredLog = (userData.activityLog || []).filter(function(x) { return x !== activityItem.id; });
-      
       setUserData(function(prev) {
-        return Object.assign({}, prev, {
-          activityLog: filteredLog,
-          loggedToday: currentLoggedToday
-        });
+        return Object.assign({}, prev, { activityLog: filteredLog, loggedToday: currentLoggedToday });
       });
     } else {
-      // Activating task tracking log
       currentLoggedToday[activityItem.id] = true;
       var extendedLog = [activityItem.id].concat(userData.activityLog || []);
-      
       setUserData(function(prev) {
-        return Object.assign({}, prev, {
-          activityLog: extendedLog,
-          loggedToday: currentLoggedToday
-        });
+        return Object.assign({}, prev, { activityLog: extendedLog, loggedToday: currentLoggedToday });
       });
       triggerXpGain(activityItem.xp);
     }
@@ -369,9 +333,7 @@ export default function App() {
     }
 
     setUserData(function(prev) {
-      return Object.assign({}, prev, {
-        analyzeCount: (prev.analyzeCount || 0) + 1
-      });
+      return Object.assign({}, prev, { analyzeCount: (prev.analyzeCount || 0) + 1 });
     });
     setInterceptStep('matrix');
   }
@@ -386,11 +348,9 @@ export default function App() {
     setShowSettingsModal(false);
   }
 
-  // 4. THEME RESOLUTION DEFENSIVE FALLBACK LAYER
   var activeThemeType = userData?.themeArchetype || 'tactical';
   var theme = THEMES[activeThemeType];
 
-  // Compute character and metric stats based on actual log history arrays
   var computedLevel = userData ? Math.min(Math.floor((userData.xp || 0) / LEVEL_XP_REQUIREMENT), MAXIMUM_LEVEL - 1) : 0;
   var currentLevelProgressXp = userData ? (userData.xp || 0) % LEVEL_XP_REQUIREMENT : 0;
 
@@ -399,26 +359,22 @@ export default function App() {
     userData.activityLog.forEach(function(activityId) {
       var foundActivity = UNIVERSAL_ACTIVITIES.find(function(act) { return act.id === activityId; });
       if (foundActivity) {
-        attributeStats[foundActivity.stat] = Math.min(attributeStats[foundActivity.stat] + 1, 99);
+        attributeStats[foundActivity.stat] = Math.min(attributeStats[foundActivity.stat] + 1, 25);
       }
     });
   }
 
-  // 5. RENDERING BRANCH CONFIGURATIONS
   if (!userData) {
-    // ONBOARDING USER REGISTRATION SUB-VIEW FLOW
     return <OnboardingWizard onWizardComplete={function(freshState) { setUserData(freshState); }} />;
   }
 
-  // CORE APPLICATION WORKSPACE RENDERPASS
   return (
-    <div style={{ minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: theme.font, paddingBottom: '90px', transition: 'background 0.5s ease' }}>
+    <div style={{ minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: theme.font, paddingBottom: '90px' }}>
       
-      {/* GLOBAL HUD SYSTEM BANNER */}
-      <header style={{ position: 'sticky', top: 0, zIndex: 100, background: `${theme.bg}dd`, borderBottom: `1px solid ${theme.bd}`, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+      <header style={{ position: 'sticky', top: 0, zIndex: 100, background: `${theme.bg}dd`, borderBottom: `1px solid ${theme.bd}`, backdropFilter: 'blur(12px)' }}>
         <div style={{ maxWidth: '540px', margin: '0 auto', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: theme.accent, style: { animation: 'pulse 2s infinite' } }} />
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: theme.accent }} />
             <h1 style={{ fontFamily: "'DM Mono', monospace", fontSize: '14px', fontWeight: '600', letterSpacing: '0.15em' }}>SILO v8.0</h1>
           </div>
           <button 
@@ -430,14 +386,11 @@ export default function App() {
         </div>
       </header>
 
-      {/* CORE FRAME LAYOUT STAGING WINDOW */}
       <main style={{ maxWidth: '540px', margin: '0 auto', padding: '16px', animation: 'fadeUp 0.4s ease' }}>
         
-        {/* VIEWPORTS ROUTER COMPONENT CONDITIONAL CONTROLLER */}
         {activeTab === 'dashboard' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             
-            {/* DYNAMIC METRIC ENGINE HERO COMPONENT */}
             <div style={{ background: theme.bg2, border: `1px solid ${theme.bd}`, borderRadius: '16px', padding: '20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: '12px', right: '14px', display: 'flex', alignItems: 'center', gap: '4px', background: `${theme.streak}12`, border: `1px solid ${theme.streak}33`, padding: '4px 10px', borderRadius: '12px' }}>
                 <span style={{ fontSize: '11px', color: theme.streak }}>🔥</span>
@@ -450,10 +403,8 @@ export default function App() {
                 {theme.charLabel} // IDENT: {userData.name.toUpperCase()}
               </span>
 
-              {/* HIGH RES GRAPH ARTWORK CANVAS LAYER */}
               <CharacterArt level={computedLevel} color={theme.accent} glow={theme.accentBorder} />
 
-              {/* TIMESTEP TICK LOOP DISPLAY GRID */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', background: theme.bg3, padding: '12px', borderRadius: '12px', marginTop: '16px', border: `1px solid ${theme.bd}` }}>
                 <div>
                   <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '18px', fontWeight: '500', color: theme.text }}>{formatTwoDigits(currentTimeParts.h)}</div>
@@ -469,13 +420,11 @@ export default function App() {
                 </div>
               </div>
 
-              {/* PROGRESSION LEVEL XP SLIDER EXPONENT METRIC */}
               <div style={{ marginTop: '16px' }}>
                 <MetricProgressBar label="CORE INTEGRITY EXPERIENCE MATRIX" value={currentLevelProgressXp} max={LEVEL_XP_REQUIREMENT} color={theme.accent} theme={theme} />
               </div>
             </div>
 
-            {/* THREE-AXIS CORE TRAIT PROFILE MATRIX */}
             <div style={{ background: theme.bg2, border: `1px solid ${theme.bd}`, borderRadius: '16px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: theme.dim, letterSpacing: '0.1em' }}>BIO-COGNITIVE ATTRIBUTES</span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -485,7 +434,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* CRITICAL ACTIONS ROUTINE STAGING INPUT CONTROLS */}
             <div style={{ background: theme.bg2, border: `1px solid ${theme.bd}`, borderRadius: '16px', padding: '16px' }}>
               <div style={{ marginBottom: '12px' }}>
                 <h3 style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '0.05em' }}>{theme.trainTitle}</h3>
@@ -503,7 +451,7 @@ export default function App() {
                         width: '100%', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px',
                         background: isLoggedToday ? theme.accentDim : theme.bg3,
                         border: isLoggedToday ? `1px solid ${theme.accent}` : `1px solid ${theme.bd}`,
-                        borderRadius: '12px', textAlign: 'left', transition: 'all 0.2s', cursor: 'pointer'
+                        borderRadius: '12px', textAlign: 'left', cursor: 'pointer'
                       }}
                     >
                       <span style={{ fontSize: '18px', opacity: isLoggedToday ? 1 : 0.6 }}>{activity.icon}</span>
@@ -525,8 +473,6 @@ export default function App() {
 
         {activeTab === 'shadow' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            
-            {/* EMERGENCY SHADOW TRANSMISSION INTERCEPT ROUTER CONTAINER */}
             <div style={{ background: theme.bg2, border: `1px solid ${theme.bd}`, borderRadius: '16px', padding: '16px' }}>
               <div style={{ marginBottom: '14px' }}>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: theme.accent, letterSpacing: '0.1em', display: 'block', marginBottom: '4px' }}>PROTECTIVE TRANSMISSION BUFFER</span>
@@ -543,7 +489,7 @@ export default function App() {
                     style={{
                       width: '100%', height: '140px', padding: '14px', background: theme.bg3,
                       border: `1px solid ${theme.bd}`, borderRadius: '12px', color: theme.text,
-                      fontSize: '13px', lineHeight: '1.5', resize: 'none', transition: 'border 0.2s'
+                      fontSize: '13px', lineHeight: '1.5', resize: 'none'
                     }}
                   />
                   <button
@@ -555,7 +501,7 @@ export default function App() {
                     style={{
                       width: '100%', padding: '14px', background: shadowText.trim() ? theme.accent : theme.bd,
                       borderRadius: '12px', fontSize: '12px', fontWeight: '600', color: shadowText.trim() ? '#000' : theme.dim,
-                      fontFamily: "'DM Mono', monospace", letterSpacing: '0.05em', cursor: shadowText.trim() ? 'pointer' : 'default', transition: 'all 0.2s'
+                      fontFamily: "'DM Mono', monospace", letterSpacing: '0.05em', cursor: shadowText.trim() ? 'pointer' : 'default'
                     }}
                   >
                     {theme.analyzeBtn}
@@ -563,7 +509,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* SHADOW PIPELINE INTERPOLATION STEP: IDENTIFY SITUATIONAL TRIGGER */}
               {interceptStep === 'trigger' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeUp 0.3s ease' }}>
                   <div style={{ background: theme.bg3, borderLeft: `3px solid ${theme.accent}`, padding: '12px', borderRadius: '4px 12px 12px 4px' }}>
@@ -585,7 +530,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* SHADOW PIPELINE INTERPOLATION STEP: IDENTIFY LOGICAL EXPECTED UTILITY OUTCOME */}
               {interceptStep === 'outcome' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeUp 0.3s ease' }}>
                   <div style={{ background: theme.bg3, borderLeft: `3px solid ${theme.accent}`, padding: '12px', borderRadius: '4px 12px 12px 4px' }}>
@@ -607,7 +551,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* SHADOW PIPELINE CONCLUSION VIEW: SYSTEM RETENTION MATRIX OUTPUT */}
               {interceptStep === 'matrix' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadeUp 0.3s ease' }}>
                   <div style={{ background: `${theme.accent}0a`, border: `1px solid ${theme.accent}33`, padding: '16px', borderRadius: '12px', fontFamily: "'DM Mono', monospace", fontSize: '12px', lineHeight: '1.6', color: theme.text }}>
@@ -626,15 +569,12 @@ export default function App() {
                   </button>
                 </div>
               )}
-
             </div>
           </div>
         )}
 
         {activeTab === 'journal' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            
-            {/* REFLECTION COGNITIVE STAGING CONTAINER */}
             <div style={{ background: theme.bg2, border: `1px solid ${theme.bd}`, borderRadius: '16px', padding: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: theme.dim, letterSpacing: '0.1em' }}>REFLECTIVE ENVELOPE STAGING</span>
@@ -660,8 +600,7 @@ export default function App() {
                 }}
               />
 
-              {/* MOOD SELECTION ROW INPUT */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', gap: '8px', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '14px' }}>
                 <span style={{ fontSize: '10px', color: theme.dim, fontFamily: "'DM Mono', monospace" }}>AFFECTIVE VALUE:</span>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   {MOOD_EMOJIS.map(function(m) {
@@ -672,7 +611,7 @@ export default function App() {
                         style={{
                           fontSize: '14px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           background: isSelected ? theme.accentDim : 'transparent', border: isSelected ? `1px solid ${theme.accent}` : '1px solid transparent',
-                          borderRadius: '6px', cursor: 'pointer', transition: 'all 0.15s'
+                          borderRadius: '6px', cursor: 'pointer'
                         }}
                       >
                         {m}
@@ -688,19 +627,18 @@ export default function App() {
                 style={{
                   width: '100%', padding: '12px', background: journalInput.trim() ? theme.accent : theme.bd,
                   borderRadius: '12px', fontSize: '12px', fontWeight: '600', color: journalInput.trim() ? '#000' : theme.dim,
-                  fontFamily: "'DM Mono', monospace", cursor: journalInput.trim() ? 'pointer' : 'default', transition: 'all 0.2s'
+                  fontFamily: "'DM Mono', monospace", cursor: journalInput.trim() ? 'pointer' : 'default'
                 }}
               >
                 {theme.journalSave}
               </button>
             </div>
 
-            {/* HISTORICAL ARCHIVAL SYSTEM LOG TREE */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: theme.dim, letterSpacing: '0.08em', paddingLeft: '4px' }}>LOG TRANSMISSION RECORD ARCHIVE</span>
               
               {(!userData.journalEntries || userData.journalEntries.length === 0) ? (
-                <div style={{ border: `1px dashed ${theme.bd}`, padding: '24px', borderRadius: '12px', textAlign: 'center', color: theme.dimmer, fontSize: '12px', whiteSpace: 'pre-line', lineHeight: '1.5' }}>
+                <div style={{ border: `1px dashed ${theme.bd}`, padding: '24px', borderRadius: '12px', textAlign: 'center', color: theme.dimmer, fontSize: '12px', lineHeight: '1.5' }}>
                   No historical entries registered within current local instance database.
                 </div>
               ) : (
@@ -718,13 +656,11 @@ export default function App() {
                 })
               )}
             </div>
-
           </div>
         )}
       </main>
 
-      {/* FIXED NAV MASTER CONTROLLER */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200, background: `${theme.bg}ee`, borderTop: `1px solid ${theme.bd}`, backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200, background: `${theme.bg}ee`, borderTop: `1px solid ${theme.bd}`, backdropFilter: 'blur(16px)' }}>
         <div style={{ maxWidth: '540px', margin: '0 auto', display: 'flex', padding: '8px 8px 12px' }}>
           {[
             { id: 'dashboard', label: 'FRAME', icon: '🛡️' },
@@ -741,7 +677,7 @@ export default function App() {
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer'
                 }}
               >
-                <span style={{ fontSize: '16px', filter: isActive ? `drop-shadow(0 0 6px ${theme.accent})` : 'none', opacity: isActive ? 1 : 0.4, transition: 'all 0.2s' }}>
+                <span style={{ fontSize: '16px', opacity: isActive ? 1 : 0.4 }}>
                   {tabItem.icon}
                 </span>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', fontWeight: isActive ? '600' : '400', color: isActive ? theme.accent : theme.dim, letterSpacing: '0.05em' }}>
@@ -753,22 +689,18 @@ export default function App() {
         </div>
       </nav>
 
-      {/* OVERLAY MODAL HUD SYSTEM COMPONENT: TOAST NOTIFICATION */}
       {xpNotification && (
         <XPToastComponent amount={xpNotification} theme={theme} onDone={function() { setXpNotification(null); }} />
       )}
 
-      {/* OVERLAY MODAL HUD SYSTEM COMPONENT: LEVEL UP NOTIFIER */}
       {evolutionModal && (
         <LevelEvolutionModal stage={evolutionModal} theme={theme} onDone={function() { setEvolutionModal(null); }} />
       )}
 
-      {/* OVERLAY MODAL HUD SYSTEM COMPONENT: CORE SYSTEM SETTINGS MANAGEMENT */}
       {showSettingsModal && (
         <SettingsPanel theme={theme} user={userData} onClose={function() { setShowSettingsModal(false); }} onReset={resetSystemDatabase} />
       )}
 
-      {/* OVERLAY MODAL HUD SYSTEM COMPONENT: PREMIUM MONETIZATION SYSTEM STANDIN */}
       {showProModal && (
         <PremiumPaywallStandin triggerKey={proModalTriggerKey} theme={theme} onClose={function() { setShowProModal(false); }} />
       )}
@@ -779,7 +711,7 @@ export default function App() {
 
 // ─── ONBOARDING SUBSYSTEM SUB-ROUTER WIZARD ──────────────────────────────────
 function OnboardingWizard({ onWizardComplete }) {
-  var [stage, setStage] = useState('identity_matrix'); // 'identity_matrix', 'configuration_profile', 'timestamp_calibration'
+  var [stage, setStage] = useState('identity_matrix');
   var [selectedArchetype, setSelectedArchetype] = useState('tactical');
   var [profileNameInput, setProfileNameInput] = useState('');
   var [timestampInput, setTimestampInput] = useState(getTodayString());
@@ -803,8 +735,8 @@ function OnboardingWizard({ onWizardComplete }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: activeThemeMeta.bg, color: activeThemeMeta.text, fontFamily: activeThemeMeta.font, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', transition: 'all 0.5s ease' }}>
-      <div style={{ width: '100%', maxWidth: '400px', background: activeThemeMeta.bg2, border: `1px solid ${activeThemeMeta.bd}`, borderRadius: '24px', padding: '24px', boxShadow: '0 12px 40px rgba(0,0,0,0.5)', animation: 'slideUp 0.4s ease' }}>
+    <div style={{ minHeight: '100vh', background: activeThemeMeta.bg, color: activeThemeMeta.text, fontFamily: activeThemeMeta.font, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ width: '100%', maxWidth: '400px', background: activeThemeMeta.bg2, border: `1px solid ${activeThemeMeta.bd}`, borderRadius: '24px', padding: '24px', animation: 'slideUp 0.4s ease' }}>
         
         {stage === 'identity_matrix' && (
           <div style={{ animation: 'fadeUp 0.3s ease' }}>
@@ -816,7 +748,7 @@ function OnboardingWizard({ onWizardComplete }) {
               <button
                 onClick={function() { setSelectedArchetype('tactical'); }}
                 style={{
-                  width: '100%', padding: '14px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer', transition: 'all 0.2s',
+                  width: '100%', padding: '14px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer',
                   background: selectedArchetype === 'tactical' ? '#0a1628' : activeThemeMeta.bg3,
                   border: selectedArchetype === 'tactical' ? '1px solid #4a9eff' : `1px solid ${activeThemeMeta.bd}`
                 }}
@@ -827,7 +759,7 @@ function OnboardingWizard({ onWizardComplete }) {
               <button
                 onClick={function() { setSelectedArchetype('supportive'); }}
                 style={{
-                  width: '100%', padding: '14px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer', transition: 'all 0.2s',
+                  width: '100%', padding: '14px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer',
                   background: selectedArchetype === 'supportive' ? '#1a0810' : activeThemeMeta.bg3,
                   border: selectedArchetype === 'supportive' ? '1px solid #e879a0' : `1px solid ${activeThemeMeta.bd}`
                 }}
@@ -930,7 +862,7 @@ function XPToastComponent({ amount, theme, onDone }) {
       position: 'fixed', top: '72px', right: '16px', zIndex: 700, background: 'rgba(7, 10, 16, 0.96)',
       border: `1px solid ${theme.accent}`, borderRadius: '12px', padding: '10px 16px', display: 'flex',
       alignItems: 'center', gap: '8px', fontSize: '11px', color: theme.accent, fontFamily: "'DM Mono', monospace",
-      letterSpacing: '0.1em', boxShadow: `0 0 24px ${theme.accent}22`, animation: 'fadeUp 0.2s ease-out'
+      letterSpacing: '0.1em', boxShadow: `0 0 24px ${theme.accent}22`
     }}>
       ⚡ +{amount} VECTOR INTEGRITY CREDITS ACCRUED
     </div>
@@ -944,9 +876,9 @@ function LevelEvolutionModal({ stage, theme, onDone }) {
   }, [onDone]);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 800, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', animation: 'pulse 0.3s cubic-bezier(0, 0, 0.2, 1)' }}>
-      <div style={{ textAlign: 'center', animation: 'slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
-        <div style={{ fontSize: '64px', marginBottom: '14px', filter: `drop-shadow(0 0 20px ${stage.glow})` }}>{stage.emoji}</div>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 800, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ textAlign: 'center', animation: 'slideUp 0.5s ease' }}>
+        <div style={{ fontSize: '64px', marginBottom: '14px' }}>{stage.emoji}</div>
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '10px', color: stage.color, letterSpacing: '0.25em', marginBottom: '6px' }}>CHARACTER CORE ENGINE ADVANCED</div>
         <h2 style={{ fontSize: '28px', fontWeight: '700', color: theme.text, marginBottom: '8px' }}>{stage.name.toUpperCase()}</h2>
         <p style={{ fontSize: '13px', color: theme.dim, lineHeight: '1.6', maxWidth: '320px', margin: '0 auto' }}>{stage.desc}</p>
@@ -983,7 +915,7 @@ function SettingsPanel({ theme, user, onClose, onReset }) {
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button onClick={function() { setShowResetConfirm(false); }} style={{ flex: 1, padding: '10px', background: 'transparent', border: `1px solid ${theme.bd}`, borderRadius: '8px', color: theme.muted, fontSize: '11px', fontFamily: "'DM Mono', monospace", cursor: 'pointer' }}>ABORT RESET</button>
-              <button onClick={onReset} style={{ flex: 1, padding: '10px', background: '#7f1d1d', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '11px', fontFamily: "'DM Mono', monospace', fontWeight: '600', cursor: 'pointer' }}>CONFIRM PURGE</button>
+              <button onClick={onReset} style={{ flex: 1, padding: '10px', background: '#7f1d1d', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '11px', fontFamily: "'DM Mono', monospace", fontWeight: '600', cursor: 'pointer' }}>CONFIRM PURGE</button>
             </div>
           </div>
         ) : (
@@ -1009,13 +941,13 @@ function PremiumPaywallStandin({ triggerKey, theme, onClose }) {
 
   return (
     <div onClick={function(e) { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, zIndex: 600, background: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '460px', background: theme.bg2, border: `1px solid ${theme.proBd}`, borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', animation: 'slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
-        <div style={{ background: theme.proBg, padding: '20px', borderBottom: `1px solid ${theme.proBd}` }}>
+      <div style={{ width: '100%', maxWidth: '460px', background: theme.bg2, border: `1px solid ${theme.proBd}`, borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', padding: '20px' }}>
+        <div style={{ background: theme.proBg, padding: '20px', borderBottom: `1px solid ${theme.proBd}`, margin: '-20px -20px 20px' }}>
           <div style={{ fontSize: '24px', marginBottom: '8px' }}>👑</div>
           <h3 style={{ fontSize: '16px', fontWeight: '700', color: theme.text }}>{headers[triggerKey] || headers.pro}</h3>
           <p style={{ fontSize: '12px', color: theme.dim, marginTop: '4px', lineHeight: '1.5' }}>{descriptors[triggerKey] || descriptors.pro}</p>
         </div>
-        <div style={{ padding: '20px' }}>
+        <div>
           <div style={{ padding: '14px', background: theme.proBg, border: `1px solid ${theme.proBd}`, borderRadius: '12px', marginBottom: '16px' }}>
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '9px', color: theme.proTxt, letterSpacing: '0.15em', marginBottom: '8px' }}>SILO COMPILATION SUBSYSTEM INSIGHTS:</div>
             {['Infinite local tracking registries', 'Unrestricted vector evaluation models', 'Deep historical trend mapping mechanics'].map(function(feat) {
